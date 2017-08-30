@@ -1,0 +1,40 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "test",
+  "repository": {},
+  "keywords": [],
+  "main": "work.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "cjh",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.0.1",
+    "body-parser": "^1.15.2",
+    "connect-redis": "^3.2.0",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.1",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "formidable": "^1.1.1",
+    "iconv-lite": "^0.4.13",
+    "imagemin": "^5.2.2",
+    "imagemin-jpegtran": "^5.0.2",
+    "imagemin-mozjpeg": "^6.0.0",
+    "imagemin-pngquant": "^5.0.0",
+    "moment": "^2.17.1",
+    "multer": "^1.2.0",
+    "mysql": "^2.11.1",
+    "mysql-queues": "^1.0.0",
+    "node-xlsx": "^0.7.4",
+    "redis": "^2.6.3",
+    "request": "^2.74.0",
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^2.0.3",
+    "winston": "^2.2.0",
+    "winston-daily-rotate-file": "^1.2.0",
+    "xml2js": "^0.4.17"
+  }
+}
