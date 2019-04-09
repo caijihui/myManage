@@ -1,0 +1,519 @@
+<%include ../sub_header%>
+
+
+<body class="gray-bg">
+<div class="row">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+
+            <div class="col-sm-3">
+                <div class="wrapper wrapper-content animated fadeInRight">
+
+                    <div class="ibox-content m-b-sm border-bottom">
+                        <h4>已回款金额</h4>
+                        <h1 class="no-margins" id="total">0</h1>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="wrapper wrapper-content animated fadeInRight">
+
+                    <div class="ibox-content m-b-sm border-bottom">
+                        <h4>待回款金额</h4>
+                        <h1 class="no-margins" id="active">0</h1>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="wrapper wrapper-content animated fadeInRight">
+
+                    <div class="ibox-content m-b-sm border-bottom">
+                        <h4>今日投资额</h4>
+                        <h1 class="no-margins" id="deal_today">0</h1>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="wrapper wrapper-content animated fadeInRight">
+
+                    <div class="ibox-content m-b-sm border-bottom">
+                        <h4>投资订单数据</h4>
+                        <h1 class="no-margins" id="deal_month">0/0</h1>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="wrapper animated fadeInRight">
+                    <div class="ibox-content m-b-sm border-bottom">
+                        <div id="toolbar" style="width: 450px">
+                            <button id="button" data-toggle="modal"  class="btn btn-default" onclick="showModal()" style="float: left">添加</button>
+                            <button class="btn btn-default" style="float: right;width: 15%;margin-left: 5%" onclick="onFilter()">筛选</button>
+                            <!--<input placeholder="开始日期" class="form-control layer-date" id="start">-->
+                            <!--<input placeholder="结束日期" class="form-control layer-date" id="end">-->
+                            <select class="form-control" style="width: 28%;display: inline;margin-left: 5%" id="statusFilter" onchange="onFilter()">
+                                <option value="0">--所有状态--</option>
+                                <option value="1">投资中</option>
+                                <option value="2">已回款提现</option>
+                                <option value="3">已逾期</option>
+                            </select>
+                            <select class="form-control" style="width: 28%;display: inline;margin-left: 5%" id="intentionFilter" onchange="onFilter()">
+                                <option value="-1">--所有平台--</option>
+                                <% system.platfromList.forEach(function (one) { %>
+                                <option value="<%= one['name']%>"><%= one['name']%></option>
+                                <%})%>
+                            </select>
+
+                        </div>
+                        <table id="table">
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!--新增-->
+<div id="modal" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 class="m-t-none m-b">投资信息</h3>
+                                <div class="form-group">
+                                    <label>平台：</label>
+                                    <select class="form-control" id="plat_from">
+                                        <% system.platfromList.forEach(function (one) { %>
+                                        <option value="<%= one['name']%>"><%= one['name']%></option>
+                                        <%})%>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>投资日期：</label>
+                                    <input id="invest_start" placeholder="投资日期" class="form-control layer-date" >
+                                </div>
+                                <div class="form-group">
+                                    <label>结束日期：</label>
+                                    <input id="invest_end" placeholder="回款到期日期" class="form-control layer-date">
+                                </div>
+                                <div class="form-group">
+                                    <label>姓名：</label>
+                                    <input id="invest_name" type="text" placeholder="请录入姓名" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>手机号：</label>
+                                    <input id="invest_phone" type="number" placeholder="请录入手机号" class="form-control" required="required">
+                                </div>
+                                <div class="form-group">
+                                    <label>标期：</label>
+                                    <input id="from_to" type="text" placeholder="请输入投资期限" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>投资金额：</label>
+                                    <input id="invest_money" type="number" placeholder="请输入投资金额" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>投资奖励：</label>
+                                    <input id="invest_rewords" type="number" placeholder="请输入奖励金额" class="form-control">
+                                </div>
+
+                            <div>
+                                <button type="button" class="btn btn-sm btn-primary pull-right m-t-n-xs" onclick="submitClient()"><strong>确认</strong></button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit_modal" class="modal fade" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3 class="m-t-none m-b" id="edit_title"></h3>
+                         <input style="display: none;" value="" id="invest_record_id" name="invest_record_id">
+                        <div class="form-group">
+                            <label>平台：</label>
+                            <select class="form-control" id="plat_from">
+                                <% system.platfromList.forEach(function (one) { %>
+                                <option value="<%= one['id']%>"><%= one['name']%></option>
+                                <%})%>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>投资日期：</label>
+                            <input id="invest_start" placeholder="投资日期" class="form-control layer-date" >
+                        </div>
+                        <div class="form-group">
+                            <label>结束日期：</label>
+                            <input id="invest_end" placeholder="回款到期日期" class="form-control layer-date">
+                        </div>
+                        <div class="form-group">
+                            <label>姓名：</label>
+                            <input id="invest_name" type="text" placeholder="请录入姓名" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>手机号：</label>
+                            <input id="invest_phone" type="number" placeholder="请录入手机号" class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>标期：</label>
+                            <input id="from_to" type="text" placeholder="请输入投资期限" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>投资金额：</label>
+                            <input id="invest_money" type="number" placeholder="请输入投资金额" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>投资奖励：</label>
+                            <input id="invest_rewords" type="number" placeholder="请输入奖励金额" class="form-control">
+                        </div>
+                        <div>
+                                <button class="btn btn-sm btn-primary pull-right m-t-n-xs" onclick="submitEdit()" type="submit"><strong>确认修改</strong></button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%include ../sub_footer%>
+
+
+<script>
+
+    var invest_start = {
+        elem: "#invest_start",
+        format: "YYYY/MM/DD hh:mm:ss",
+        min: "2018-01-01 00:00:00",
+        max: "2099-06-16 23:59:59",
+        istime: true,
+        istoday: false,
+        choose: function(datas) {
+            end.min = datas;
+            end.start = datas
+        }
+    };
+    var invest_end = {
+        elem: "#invest_end",
+        format: "YYYY/MM/DD hh:mm:ss",
+        min: "2018-01-01 00:00:00",
+        max: "2099-06-16 23:59:59",
+        istime: true,
+        istoday: false,
+        choose: function(datas) {
+            start.max = datas
+        }
+    };
+
+    laydate(invest_start);
+    laydate(invest_end);
+
+    var dataSet = [];
+
+  function onFilter() {
+    var selectedStatus = document.getElementById('statusFilter').options[document.getElementById('statusFilter').selectedIndex].value;
+    var selectedIntention = document.getElementById('intentionFilter').options[document.getElementById('intentionFilter').selectedIndex].value;
+    //前端过滤
+    var showData = [];
+    for (var i=0;i<dataSet.length;i++){
+      if(selectedStatus == 0){
+        if(selectedIntention == -1){
+          showData.push(dataSet[i]);
+        }else{
+          if(dataSet[i].plat_from == selectedIntention){
+            showData.push(dataSet[i]);
+          }
+        }
+      }else{
+        if(dataSet[i].status == selectedStatus){
+          if(selectedIntention == -1){
+            showData.push(dataSet[i]);
+          }else{
+              console.log(selectedIntention);
+              console.log(dataSet[i].plat_from);
+            if(dataSet[i].plat_from == selectedIntention){
+              showData.push(dataSet[i]);
+            }
+          }
+        }
+      }
+    }
+    $("#table").bootstrapTable("load",showData);
+  }
+
+  
+  $(function () {
+    <!--$.ajax({-->
+      <!--type:'post',-->
+      <!--url:'< %= system['host']% >/api/get/serverClientDeal',-->
+      <!--data:[],-->
+      <!--success:function (data) {-->
+        <!--document.getElementById('deal_today').innerHTML = data.today;-->
+        <!--document.getElementById('deal_month').innerHTML = data.month;-->
+      <!--}-->
+    <!--});-->
+    
+    
+    $("#table").bootstrapTable({
+      classes: 'table table-hover',
+      height: undefined,
+      undefinedText: '-',
+      sortName: 'bargain_id',
+      sortOrder: 'asc',
+      striped: false,
+      pageList: [10, 25, 50, 100, 1000, 5000],
+      search: true,
+      selectItemName: 'toolbar1',
+      showHeader: true,
+      showColumns: true,
+      showRefresh: true,
+      showToggle: true,
+      showExport: true,
+      exportDataType: "all",              //basic', 'all', 'selected'.
+      smartDisplay: false,
+      minimumCountColumns: 1,
+      idField: undefined,
+      cardView: false,
+      clickToSelect: false,
+      singleSelect: false,
+      toolbar: "#toolbar" ,
+      checkboxHeader: true,
+      sortable: true,
+      maintainSelected: false,
+      showLoading: true,
+      columns: [ {
+        field: "id",
+        title: "编号",
+        sortable: true,
+      },{
+          field: "plat_from",
+          title: "投资平台",
+          sortable: true,
+      },  {
+        field: "invest_name",
+        title: "姓名",
+        sortable: true,
+      }, {
+        field: "invest_phone",
+        title: "号码",
+        sortable: true,
+      }, {
+        field: "invest_money",
+        title: "投资金额",
+        sortable: true,
+      }, {
+          field: "from_to",
+          title: "投资期限",
+          sortable: true,
+      },{
+        field: "invest_rewords",
+        title: "返现奖励",
+        sortable: true,
+      }, {
+        field: "invest_start",
+        title: "投资日期",
+        sortable: true,
+      }, {
+          field: "invest_end",
+          title: "回款日期",
+          sortable: true,
+      }, {
+        field: "create_time",
+        title: "添加时间",
+        sortable: true,
+      },{
+          field: "update_time",
+          title: "最近操作时间",
+          sortable: true,
+      },{
+          field: "status",
+          title: "状态",
+          sortable: true,
+          editable: {
+            type: 'select',
+            title: '状态',
+            validate: function (v) {
+              if (!v) return '状态不能为空';
+            },
+            source:[{value:1,text:"投资中"},{value:2,text:"已回款提醒"},{value:3,text:"逾期"}]
+          }
+        },
+        {
+          field: 'operate',
+          title: '操作',
+          align: 'left',
+          events: operateEvents,
+          width : '6%',
+          formatter: operateFormatter
+        }],
+      filter: true,
+      data: [],
+      method: 'post',
+      url: '<%=system['host']%>/api/get/allInvestRecord',
+      cache: true,
+      contentType: 'application/json',
+      queryParams: function (params) {
+        params.admin_id = <%= system['admin_id']%>;
+        params.status = "all";
+        return params;},
+      queryParamsType: '', // undefined
+      responseHandler: function (res) {return res;},
+      pagination: true,
+      sidePagination: 'client', // client or server
+      totalRows: 0, // server side need to set
+      pageNumber: 1,
+      pageSize: 10,
+      onLoadSuccess:function(data){
+          dataSet = data ;
+        //先清空原始数据
+        $("#table").bootstrapTable("load",dataSet);
+      },
+      onEditableSave: function (field, row, oldValue, $el) {
+        $.ajax({
+          type: "post",
+          url: "<%=system['host']%>/api/edit/editInvestRecord",
+          data: { strJson: JSON.stringify(row) },
+          success: function (data) {
+           if(data.isSuccess){
+             alert('修改成功');
+           }
+          },
+          error: function () {
+            alert("Error");
+          },
+          complete: function () {
+
+          }
+
+        });
+      },
+
+    });
+
+  });
+  window.operateEvents = {
+    'click .edit': function (e, value, row, index) {
+      editClient(row);
+    },
+  };
+  function operateFormatter(value, row, index) {
+    return [
+      '<a class="edit" href="javascript:void(0)" title="修改">',
+      '<i>修改</i>',
+      '</a> ',
+    ].join('');
+  }
+  function showModal() {
+    //清空参数
+     document.getElementById('invest_phone').value = "",
+     document.getElementById('invest_name').value = "",
+      document.getElementById('invest_money').value ="",
+      document.getElementById('invest_rewords').value ="",
+      document.getElementById('from_to').value ="",
+      document.getElementById('invest_start').value ="",
+      document.getElementById('invest_end').value ="",
+      document.getElementById('plat_from').value ="",
+    $('#modal').modal('show');
+  }
+
+  //提交入库
+  function submitClient() {
+    $.ajax({
+      type:'post',
+      url:'<%= system['host']%>/api/add/invest',
+      data:{
+          invest_phone:document.getElementById('invest_phone').value,
+          invest_name:document.getElementById('invest_name').value,
+          invest_money:document.getElementById('invest_money').value,
+          invest_rewords:document.getElementById('invest_rewords').value,
+          from_to:document.getElementById('from_to').value,
+          invest_start:document.getElementById('invest_start').value,
+          invest_end:document.getElementById('invest_end').value,
+          plat_from:document.getElementById('plat_from').value,
+      },
+      success:function (data) {
+        if(data.isSuccess){
+          alert('添加成功');
+          $('#modal').modal('hide');
+          //刷新表
+          var opt = {
+            url: "<%= system['host']%>/api/get/allInvestRecord",
+            silent: true,
+            method: 'post',
+          };
+          dataSet = opt;
+          $('#table').bootstrapTable('refresh', opt)
+        }else{
+          alert(data.message);
+          $('#modal').modal('hide');
+        }
+      }
+    });
+  }
+  //编辑客户
+    function editClient(row) {
+        document.getElementById('invest_record_id').value=row.id,
+        document.getElementById('invest_phone').value = row.invest_phone,
+        document.getElementById('invest_name').value =row.invest_name,
+        document.getElementById('invest_money').value =row.invest_money,
+        document.getElementById('invest_rewords').value =row.invest_rewords,
+        document.getElementById('from_to').value =row.from_to,
+        document.getElementById('invest_start').value =row.invest_start,
+        document.getElementById('invest_end').value =row.invest_end,
+        document.getElementById('plat_from').value =row.plat_from,
+      $('#edit_modal').modal('show');
+    }
+    //提交修改
+    function submitEdit() {
+        $.ajax({
+            type:'post',
+            url:'<%= system['host']%>/api/edit/editInvestRecord',
+            data:{
+                id:document.getElementById('invest_record_id').value,
+                invest_phone:document.getElementById('invest_phone').value,
+                invest_name:document.getElementById('invest_name').value,
+                invest_money:document.getElementById('invest_money').value,
+                invest_rewords:document.getElementById('invest_rewords').value,
+                from_to:document.getElementById('from_to').value,
+                invest_start:document.getElementById('invest_start').value,
+                invest_end:document.getElementById('invest_end').value,
+                plat_from:document.getElementById('plat_from').value,
+            },
+            success:function (data) {
+                if(data.isSuccess){
+                    alert('添加成功');
+                    $('#modal').modal('hide');
+                    //刷新表
+                    var opt = {
+                        url: "<%= system['host']%>/api/get/allInvestRecord",
+                        silent: true,
+                        method: 'post',
+                    };
+                    $('#table').bootstrapTable('refresh', opt)
+                }else{
+                    alert(data.message);
+                    $('#modal').modal('hide');
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+
+</html>
